@@ -45,6 +45,9 @@ fn s_eval(e: CELL, a: CELL) -> CELL {
                     CELL::cons(s_eval(eda, t1), s_eval(edda, t2))
                 }
                 CELL::ATOM(Token::COND) => evcon(ed, a),
+
+                //Four arithmetic operations
+                // TODO: nested arithmetic
                 CELL::ATOM(Token::PLUS) => {
                     let (eda, edd) = CELL::uncons(ed);
                     let (edda, _) = CELL::uncons(edd);
@@ -115,10 +118,10 @@ fn evadd(c: CELL, a: CELL) -> CELL {
         CELL::ATOM(Token::NUMBER(i)) => match a {
             CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i + j)),
             _ => {
-                panic!("add: type error");
+                panic!("evadd: type error");
             }
         },
-        _ => panic!("not a number"),
+        _ => panic!("evadd: type error"),
     }
 }
 fn evsub(c: CELL, a: CELL) -> CELL {
@@ -126,10 +129,10 @@ fn evsub(c: CELL, a: CELL) -> CELL {
         CELL::ATOM(Token::NUMBER(i)) => match a {
             CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i - j)),
             _ => {
-                panic!("add: type error");
+                panic!("evsub: type error");
             }
         },
-        _ => panic!("not a number"),
+        _ => panic!("evsub: type error"),
     }
 }
 
@@ -138,10 +141,10 @@ fn evsmul(c: CELL, a: CELL) -> CELL {
         CELL::ATOM(Token::NUMBER(i)) => match a {
             CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i * j)),
             _ => {
-                panic!("add: type error");
+                panic!("evsmul: type error");
             }
         },
-        _ => panic!("not a number"),
+        _ => panic!("evsmul: type error"),
     }
 }
 
@@ -150,10 +153,10 @@ fn evdiv(c: CELL, a: CELL) -> CELL {
         CELL::ATOM(Token::NUMBER(i)) => match a {
             CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i / j)),
             _ => {
-                panic!("add: type error");
+                panic!("evdiv: type error");
             }
         },
-        _ => panic!("not a number"),
+        _ => panic!("evdiv: type error"),
     }
 }
 

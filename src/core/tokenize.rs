@@ -1,6 +1,6 @@
 use super::cell::{Token, CELL};
 
-pub fn s_lex(s: &str) -> Vec<String> {
+pub fn tokenize_to_strings(s: &str) -> Vec<String> {
     let r: String = s
         .replace("(", " ( ")
         .replace(")", " ) ")
@@ -8,7 +8,7 @@ pub fn s_lex(s: &str) -> Vec<String> {
     r.split_whitespace().map(|x| x.to_string()).collect()
 }
 
-pub fn s_quote(x: CELL, mut s: Vec<String>) -> (CELL, Vec<String>) {
+pub fn tokenize_quote(x: CELL, mut s: Vec<String>) -> (CELL, Vec<String>) {
     if !s.is_empty() && s[s.len() - 1] == "'" {
         s.pop();
         (
@@ -23,36 +23,52 @@ pub fn s_quote(x: CELL, mut s: Vec<String>) -> (CELL, Vec<String>) {
     }
 }
 
-pub fn s_syn0(r: CELL, mut s: Vec<String>) -> (CELL, Vec<String>) {
+pub fn tokenize_syntax0(r: CELL, mut s: Vec<String>) -> (CELL, Vec<String>) {
     let mut t = s.split_off(s.len() - 1);
     match &*t[0] {
         "(" => (r, s),
         "." => {
-            let (rr, rs) = s_syn(s);
+            let (rr, rs) = tokenize_syntax(s);
             let (ca, _) = CELL::uncons(r);
-            s_syn0(CELL::cons(rr, ca), rs)
+            tokenize_syntax0(CELL::cons(rr, ca), rs)
         }
         _ => {
             s.append(&mut t);
-            let (rr, rs) = s_syn(s);
+            let (rr, rs) = tokenize_syntax(s);
             let c = CELL::cons(rr, r);
-            s_syn0(c, rs)
+            tokenize_syntax0(c, rs)
         }
     }
 }
 
-pub fn s_syn(mut s: Vec<String>) -> (CELL, Vec<String>) {
+pub fn tokenize_syntax(mut s: Vec<String>) -> (CELL, Vec<String>) {
     let t = s.split_off(s.len() - 1);
-    if t[0] == ")" {
-        let (r, ss) = s_syn0(CELL::ATOM(Token::NIL), s);
-        s_quote(r, ss)
-    } else {
-        s_quote(CELL::ATOM(Token::SYMBOL(String::from(&t[0]))), s)
+    match &*t[0] {
+        ")" => {
+            let (r, ss) = tokenize_syntax0(CELL::ATOM(Token::NIL), s);
+            tokenize_quote(r, ss)
+        }
+        _ => tokenize_quote(CELL::ATOM(tokenize_keyword(&t[0])), s),
+    }
+}
+
+fn tokenize_keyword(token: &str) -> Token {
+    match token {
+        "cdr" => Token::CDR,
+        "car" => Token::CAR,
+        "cond" => Token::COND,
+        "cons" => Token::CONS,
+        "eq" => Token::EQ,
+        "lambda" => Token::LAMBDA,
+        "nil" => Token::NIL,
+        "quote" => Token::QUOTE,
+        "t" => Token::T,
+        _ => Token::SYMBOL(String::from(token)),
     }
 }
 
 pub fn s_read(s: &str) -> CELL {
-    let (rs, _) = s_syn(s_lex(s));
+    let (rs, _) = tokenize_syntax(tokenize_to_strings(s));
     rs
 }
 

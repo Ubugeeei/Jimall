@@ -45,11 +45,25 @@ fn s_eval(e: CELL, a: CELL) -> CELL {
                     CELL::cons(s_eval(eda, t1), s_eval(edda, t2))
                 }
                 CELL::ATOM(Token::COND) => evcon(ed, a),
-                // TODO: impl four arithmetic operations
                 CELL::ATOM(Token::PLUS) => {
                     let (eda, edd) = CELL::uncons(ed);
                     let (edda, _) = CELL::uncons(edd);
                     evadd(eda, edda)
+                }
+                CELL::ATOM(Token::MINUS) => {
+                    let (eda, edd) = CELL::uncons(ed);
+                    let (edda, _) = CELL::uncons(edd);
+                    evsub(eda, edda)
+                }
+                CELL::ATOM(Token::MUL) => {
+                    let (eda, edd) = CELL::uncons(ed);
+                    let (edda, _) = CELL::uncons(edd);
+                    evsmul(eda, edda)
+                }
+                CELL::ATOM(Token::DIVIDE) => {
+                    let (eda, edd) = CELL::uncons(ed);
+                    let (edda, _) = CELL::uncons(edd);
+                    evdiv(eda, edda)
                 }
                 _ => {
                     let t1 = a.clone();
@@ -100,6 +114,41 @@ fn evadd(c: CELL, a: CELL) -> CELL {
     match c {
         CELL::ATOM(Token::NUMBER(i)) => match a {
             CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i + j)),
+            _ => {
+                panic!("add: type error");
+            }
+        },
+        _ => panic!("not a number"),
+    }
+}
+fn evsub(c: CELL, a: CELL) -> CELL {
+    match c {
+        CELL::ATOM(Token::NUMBER(i)) => match a {
+            CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i - j)),
+            _ => {
+                panic!("add: type error");
+            }
+        },
+        _ => panic!("not a number"),
+    }
+}
+
+fn evsmul(c: CELL, a: CELL) -> CELL {
+    match c {
+        CELL::ATOM(Token::NUMBER(i)) => match a {
+            CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i * j)),
+            _ => {
+                panic!("add: type error");
+            }
+        },
+        _ => panic!("not a number"),
+    }
+}
+
+fn evdiv(c: CELL, a: CELL) -> CELL {
+    match c {
+        CELL::ATOM(Token::NUMBER(i)) => match a {
+            CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i / j)),
             _ => {
                 panic!("add: type error");
             }

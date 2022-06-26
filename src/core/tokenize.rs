@@ -80,14 +80,6 @@ pub fn eqev(s1: CELL, s2: CELL) -> CELL {
     }
 }
 
-pub fn atomev(s: CELL) -> CELL {
-    if CELL::atom(&s) {
-        CELL::ATOM(Token::T)
-    } else {
-        CELL::ATOM(Token::NIL)
-    }
-}
-
 pub fn s_null(x: &CELL) -> bool {
     x == &CELL::ATOM(Token::NIL)
 }

@@ -1,6 +1,6 @@
 use super::{
     cell::{Token, CELL},
-    tokenize::{atomev, eqev, s_append, s_pair, s_read},
+    tokenize::{eqev, s_append, s_pair, s_read},
 };
 
 pub fn eval(s: &str) -> CELL {
@@ -17,11 +17,6 @@ fn s_eval(e: CELL, a: CELL) -> CELL {
                 CELL::ATOM(Token::QUOTE) => {
                     let (eda, _) = CELL::uncons(ed);
                     eda
-                }
-                CELL::ATOM(Token::ATOM) => {
-                    let (eda, _) = CELL::uncons(ed);
-                    let t = a.clone();
-                    atomev(s_eval(eda, t))
                 }
                 CELL::ATOM(Token::EQ) => {
                     let (eda, edd) = CELL::uncons(ed);

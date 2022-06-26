@@ -9,7 +9,6 @@ pub enum CELL {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Token {
     QUOTE,
-    ATOM,
     EQ,
     CAR,
     CDR,

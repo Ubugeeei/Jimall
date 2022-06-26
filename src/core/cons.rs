@@ -1,24 +1,24 @@
-use super::cell::CELL;
+use super::cell::Cell;
 
 #[derive(Debug, Clone)]
-pub struct CONS {
-    pub x: Box<CELL>,
-    pub y: Box<CELL>,
+pub struct Cons {
+    pub x: Box<Cell>,
+    pub y: Box<Cell>,
 }
 
 #[allow(dead_code)]
-impl PartialEq for CONS {
+impl PartialEq for Cons {
     fn eq(&self, _: &Self) -> bool {
         false
     }
 }
 
 #[allow(dead_code)]
-impl PartialEq for CELL {
+impl PartialEq for Cell {
     fn eq(&self, other: &Self) -> bool {
         match self {
-            CELL::ATOM(s1) => match other {
-                CELL::ATOM(s2) => s1 == s2,
+            Cell::ATOM(s1) => match other {
+                Cell::ATOM(s2) => s1 == s2,
                 _ => false,
             },
             _ => false,

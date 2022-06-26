@@ -1,31 +1,31 @@
-use super::{cons::CONS, tokenize::Token};
+use super::{cons::Cons, tokenize::Token};
 
 #[derive(Debug, Clone)]
-pub enum CELL {
+pub enum Cell {
     ATOM(Token),
-    PAIR(CONS),
+    PAIR(Cons),
 }
 
-impl CELL {
-    pub fn cons(a: CELL, d: CELL) -> CELL {
-        CELL::PAIR(CONS {
+impl Cell {
+    pub fn cons(a: Cell, d: Cell) -> Cell {
+        Cell::PAIR(Cons {
             x: Box::new(a),
             y: Box::new(d),
         })
     }
-    pub fn uncons(s: CELL) -> (CELL, CELL) {
+    pub fn uncons(s: Cell) -> (Cell, Cell) {
         match s {
-            CELL::PAIR(CONS { x, y }) => (
-                ::std::mem::replace(&mut *Box::leak(x), CELL::ATOM(Token::NIL)),
-                ::std::mem::replace(&mut *Box::leak(y), CELL::ATOM(Token::NIL)),
+            Cell::PAIR(Cons { x, y }) => (
+                ::std::mem::replace(&mut *Box::leak(x), Cell::ATOM(Token::NIL)),
+                ::std::mem::replace(&mut *Box::leak(y), Cell::ATOM(Token::NIL)),
             ),
-            CELL::ATOM(s) => (CELL::ATOM(s), CELL::ATOM(Token::NIL)),
+            Cell::ATOM(s) => (Cell::ATOM(s), Cell::ATOM(Token::NIL)),
         }
     }
-    pub fn atom(s: &CELL) -> bool {
+    pub fn atom(s: &Cell) -> bool {
         match &s {
-            CELL::PAIR(CONS { x: _, y: _ }) => false,
-            CELL::ATOM(_) => true,
+            Cell::PAIR(Cons { x: _, y: _ }) => false,
+            Cell::ATOM(_) => true,
         }
     }
 }

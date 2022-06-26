@@ -1,98 +1,98 @@
 use super::{
-    cell::CELL,
+    cell::Cell,
     tokenize::{eqev, s_append, s_pair, s_read, Token},
 };
 
-pub fn eval(s: &str) -> CELL {
-    s_eval(s_read(s), CELL::ATOM(Token::NIL))
+pub fn eval(s: &str) -> Cell {
+    s_eval(s_read(s), Cell::ATOM(Token::NIL))
 }
 
-fn s_eval(e: CELL, a: CELL) -> CELL {
-    if CELL::atom(&e) {
+fn s_eval(e: Cell, a: Cell) -> Cell {
+    if Cell::atom(&e) {
         s_assoc(e, a)
     } else {
-        let (ea, ed) = CELL::uncons(e);
-        if CELL::atom(&ea) {
+        let (ea, ed) = Cell::uncons(e);
+        if Cell::atom(&ea) {
             match ea {
-                CELL::ATOM(Token::QUOTE) => {
-                    let (eda, _) = CELL::uncons(ed);
+                Cell::ATOM(Token::QUOTE) => {
+                    let (eda, _) = Cell::uncons(ed);
                     eda
                 }
-                CELL::ATOM(Token::EQ) => {
-                    let (eda, edd) = CELL::uncons(ed);
-                    let (edda, _) = CELL::uncons(edd);
+                Cell::ATOM(Token::EQ) => {
+                    let (eda, edd) = Cell::uncons(ed);
+                    let (edda, _) = Cell::uncons(edd);
                     let t1 = a.clone();
                     let t2 = a.clone();
                     eqev(s_eval(eda, t1), s_eval(edda, t2))
                 }
-                CELL::ATOM(Token::CAR) => {
+                Cell::ATOM(Token::CAR) => {
                     let t = a.clone();
-                    let (eda, _) = CELL::uncons(ed);
-                    let (ra, _) = CELL::uncons(s_eval(eda, t));
+                    let (eda, _) = Cell::uncons(ed);
+                    let (ra, _) = Cell::uncons(s_eval(eda, t));
                     ra
                 }
-                CELL::ATOM(Token::CDR) => {
+                Cell::ATOM(Token::CDR) => {
                     let t = a.clone();
-                    let (eda, _) = CELL::uncons(ed);
-                    let (_, rd) = CELL::uncons(s_eval(eda, t));
+                    let (eda, _) = Cell::uncons(ed);
+                    let (_, rd) = Cell::uncons(s_eval(eda, t));
                     rd
                 }
-                CELL::ATOM(Token::CONS) => {
-                    let (eda, edd) = CELL::uncons(ed);
-                    let (edda, _) = CELL::uncons(edd);
+                Cell::ATOM(Token::Cons) => {
+                    let (eda, edd) = Cell::uncons(ed);
+                    let (edda, _) = Cell::uncons(edd);
                     let t1 = a.clone();
                     let t2 = a.clone();
-                    CELL::cons(s_eval(eda, t1), s_eval(edda, t2))
+                    Cell::cons(s_eval(eda, t1), s_eval(edda, t2))
                 }
-                CELL::ATOM(Token::COND) => evcon(ed, a),
+                Cell::ATOM(Token::COND) => evcon(ed, a),
 
                 //Four arithmetic operations
                 // TODO: nested arithmetic
-                CELL::ATOM(Token::PLUS) => {
-                    let (eda, edd) = CELL::uncons(ed);
-                    let (edda, _) = CELL::uncons(edd);
+                Cell::ATOM(Token::PLUS) => {
+                    let (eda, edd) = Cell::uncons(ed);
+                    let (edda, _) = Cell::uncons(edd);
                     evadd(eda, edda)
                 }
-                CELL::ATOM(Token::MINUS) => {
-                    let (eda, edd) = CELL::uncons(ed);
-                    let (edda, _) = CELL::uncons(edd);
+                Cell::ATOM(Token::MINUS) => {
+                    let (eda, edd) = Cell::uncons(ed);
+                    let (edda, _) = Cell::uncons(edd);
                     evsub(eda, edda)
                 }
-                CELL::ATOM(Token::MUL) => {
-                    let (eda, edd) = CELL::uncons(ed);
-                    let (edda, _) = CELL::uncons(edd);
+                Cell::ATOM(Token::MUL) => {
+                    let (eda, edd) = Cell::uncons(ed);
+                    let (edda, _) = Cell::uncons(edd);
                     evsmul(eda, edda)
                 }
-                CELL::ATOM(Token::DIVIDE) => {
-                    let (eda, edd) = CELL::uncons(ed);
-                    let (edda, _) = CELL::uncons(edd);
+                Cell::ATOM(Token::DIVIDE) => {
+                    let (eda, edd) = Cell::uncons(ed);
+                    let (edda, _) = Cell::uncons(edd);
                     evdiv(eda, edda)
                 }
                 _ => {
                     let t1 = a.clone();
                     let t2 = a.clone();
-                    s_eval(CELL::cons(s_assoc(ea, t1), ed), t2)
+                    s_eval(Cell::cons(s_assoc(ea, t1), ed), t2)
                 }
             }
         } else {
-            let (eaa, ead) = CELL::uncons(ea);
-            if eaa == CELL::ATOM(Token::LAMBDA) {
-                let (eada, eadd) = CELL::uncons(ead);
-                let (eadda, _) = CELL::uncons(eadd);
+            let (eaa, ead) = Cell::uncons(ea);
+            if eaa == Cell::ATOM(Token::LAMBDA) {
+                let (eada, eadd) = Cell::uncons(ead);
+                let (eadda, _) = Cell::uncons(eadd);
                 let t1 = a.clone();
                 let t2 = a.clone();
                 s_eval(eadda, s_append(s_pair(eada, evlis(ed, t1)), t2))
             } else {
-                CELL::ATOM(Token::NIL)
+                Cell::ATOM(Token::NIL)
             }
         }
     }
 }
 
-fn s_assoc(x: CELL, y: CELL) -> CELL {
-    let (ya, yd) = CELL::uncons(y);
-    let (yaa, yad) = CELL::uncons(ya);
-    let (yada, _) = CELL::uncons(yad);
+fn s_assoc(x: Cell, y: Cell) -> Cell {
+    let (ya, yd) = Cell::uncons(y);
+    let (yaa, yad) = Cell::uncons(ya);
+    let (yada, _) = Cell::uncons(yad);
     if yaa == x {
         yada
     } else {
@@ -100,23 +100,23 @@ fn s_assoc(x: CELL, y: CELL) -> CELL {
     }
 }
 
-fn evcon(c: CELL, a: CELL) -> CELL {
+fn evcon(c: Cell, a: Cell) -> Cell {
     let t1 = a.clone();
     let t2 = a.clone();
-    let (ca, cd) = CELL::uncons(c);
-    let (caa, cad) = CELL::uncons(ca);
-    let (cada, _) = CELL::uncons(cad);
-    if s_eval(caa, t1) == CELL::ATOM(Token::T) {
+    let (ca, cd) = Cell::uncons(c);
+    let (caa, cad) = Cell::uncons(ca);
+    let (cada, _) = Cell::uncons(cad);
+    if s_eval(caa, t1) == Cell::ATOM(Token::T) {
         s_eval(cada, t2)
     } else {
         evcon(cd, t2)
     }
 }
 
-fn evadd(c: CELL, a: CELL) -> CELL {
+fn evadd(c: Cell, a: Cell) -> Cell {
     match c {
-        CELL::ATOM(Token::NUMBER(i)) => match a {
-            CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i + j)),
+        Cell::ATOM(Token::NUMBER(i)) => match a {
+            Cell::ATOM(Token::NUMBER(j)) => Cell::ATOM(Token::NUMBER(i + j)),
             _ => {
                 panic!("evadd: type error");
             }
@@ -124,10 +124,10 @@ fn evadd(c: CELL, a: CELL) -> CELL {
         _ => panic!("evadd: type error"),
     }
 }
-fn evsub(c: CELL, a: CELL) -> CELL {
+fn evsub(c: Cell, a: Cell) -> Cell {
     match c {
-        CELL::ATOM(Token::NUMBER(i)) => match a {
-            CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i - j)),
+        Cell::ATOM(Token::NUMBER(i)) => match a {
+            Cell::ATOM(Token::NUMBER(j)) => Cell::ATOM(Token::NUMBER(i - j)),
             _ => {
                 panic!("evsub: type error");
             }
@@ -136,10 +136,10 @@ fn evsub(c: CELL, a: CELL) -> CELL {
     }
 }
 
-fn evsmul(c: CELL, a: CELL) -> CELL {
+fn evsmul(c: Cell, a: Cell) -> Cell {
     match c {
-        CELL::ATOM(Token::NUMBER(i)) => match a {
-            CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i * j)),
+        Cell::ATOM(Token::NUMBER(i)) => match a {
+            Cell::ATOM(Token::NUMBER(j)) => Cell::ATOM(Token::NUMBER(i * j)),
             _ => {
                 panic!("evsmul: type error");
             }
@@ -148,10 +148,10 @@ fn evsmul(c: CELL, a: CELL) -> CELL {
     }
 }
 
-fn evdiv(c: CELL, a: CELL) -> CELL {
+fn evdiv(c: Cell, a: Cell) -> Cell {
     match c {
-        CELL::ATOM(Token::NUMBER(i)) => match a {
-            CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i / j)),
+        Cell::ATOM(Token::NUMBER(i)) => match a {
+            Cell::ATOM(Token::NUMBER(j)) => Cell::ATOM(Token::NUMBER(i / j)),
             _ => {
                 panic!("evdiv: type error");
             }
@@ -160,13 +160,13 @@ fn evdiv(c: CELL, a: CELL) -> CELL {
     }
 }
 
-fn evlis(m: CELL, a: CELL) -> CELL {
-    if m == CELL::ATOM(Token::NIL) {
-        CELL::ATOM(Token::NIL)
+fn evlis(m: Cell, a: Cell) -> Cell {
+    if m == Cell::ATOM(Token::NIL) {
+        Cell::ATOM(Token::NIL)
     } else {
         let t1 = a.clone();
         let t2 = a.clone();
-        let (ma, md) = CELL::uncons(m);
-        CELL::cons(s_eval(ma, t1), evlis(md, t2))
+        let (ma, md) = Cell::uncons(m);
+        Cell::cons(s_eval(ma, t1), evlis(md, t2))
     }
 }

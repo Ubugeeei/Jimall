@@ -1,4 +1,3 @@
-pub mod eval;
-pub mod tokenize;
-pub mod cell;
-pub mod cons;
+pub mod evaluation;
+pub mod interfaces;
+pub mod parser;

@@ -1,10 +1,13 @@
 use super::{
-    cell::Cell,
-    tokenize::{eqev, s_append, s_pair, s_read, Token},
+    super::{
+        interfaces::cell::Cell,
+        parser::parse::{parse, Token},
+    },
+    arithmetic::{evadd, evdiv, evsmul, evsub},
 };
 
 pub fn eval(s: &str) -> Cell {
-    s_eval(s_read(s), Cell::ATOM(Token::NIL))
+    s_eval(parse(s), Cell::ATOM(Token::NIL))
 }
 
 fn s_eval(e: Cell, a: Cell) -> Cell {
@@ -37,7 +40,7 @@ fn s_eval(e: Cell, a: Cell) -> Cell {
                     let (_, rd) = Cell::uncons(s_eval(eda, t));
                     rd
                 }
-                Cell::ATOM(Token::Cons) => {
+                Cell::ATOM(Token::CONS) => {
                     let (eda, edd) = Cell::uncons(ed);
                     let (edda, _) = Cell::uncons(edd);
                     let t1 = a.clone();
@@ -113,53 +116,6 @@ fn evcon(c: Cell, a: Cell) -> Cell {
     }
 }
 
-fn evadd(c: Cell, a: Cell) -> Cell {
-    match c {
-        Cell::ATOM(Token::NUMBER(i)) => match a {
-            Cell::ATOM(Token::NUMBER(j)) => Cell::ATOM(Token::NUMBER(i + j)),
-            _ => {
-                panic!("evadd: type error");
-            }
-        },
-        _ => panic!("evadd: type error"),
-    }
-}
-fn evsub(c: Cell, a: Cell) -> Cell {
-    match c {
-        Cell::ATOM(Token::NUMBER(i)) => match a {
-            Cell::ATOM(Token::NUMBER(j)) => Cell::ATOM(Token::NUMBER(i - j)),
-            _ => {
-                panic!("evsub: type error");
-            }
-        },
-        _ => panic!("evsub: type error"),
-    }
-}
-
-fn evsmul(c: Cell, a: Cell) -> Cell {
-    match c {
-        Cell::ATOM(Token::NUMBER(i)) => match a {
-            Cell::ATOM(Token::NUMBER(j)) => Cell::ATOM(Token::NUMBER(i * j)),
-            _ => {
-                panic!("evsmul: type error");
-            }
-        },
-        _ => panic!("evsmul: type error"),
-    }
-}
-
-fn evdiv(c: Cell, a: Cell) -> Cell {
-    match c {
-        Cell::ATOM(Token::NUMBER(i)) => match a {
-            Cell::ATOM(Token::NUMBER(j)) => Cell::ATOM(Token::NUMBER(i / j)),
-            _ => {
-                panic!("evdiv: type error");
-            }
-        },
-        _ => panic!("evdiv: type error"),
-    }
-}
-
 fn evlis(m: Cell, a: Cell) -> Cell {
     if m == Cell::ATOM(Token::NIL) {
         Cell::ATOM(Token::NIL)
@@ -169,4 +125,39 @@ fn evlis(m: Cell, a: Cell) -> Cell {
         let (ma, md) = Cell::uncons(m);
         Cell::cons(s_eval(ma, t1), evlis(md, t2))
     }
+}
+
+fn eqev(s1: Cell, s2: Cell) -> Cell {
+    if s1 == s2 {
+        Cell::ATOM(Token::T)
+    } else {
+        Cell::ATOM(Token::NIL)
+    }
+}
+
+fn s_pair(x: Cell, y: Cell) -> Cell {
+    if s_null(&x) || s_null(&y) {
+        Cell::ATOM(Token::NIL)
+    } else if !(Cell::atom(&x)) && !(Cell::atom(&y)) {
+        let (xa, xd) = Cell::uncons(x);
+        let (ya, yd) = Cell::uncons(y);
+        Cell::cons(s_list(xa, ya), s_pair(xd, yd))
+    } else {
+        Cell::ATOM(Token::NIL)
+    }
+}
+
+fn s_append(x: Cell, y: Cell) -> Cell {
+    if s_null(&x) {
+        y
+    } else {
+        let (a, d) = Cell::uncons(x);
+        Cell::cons(a, s_append(d, y))
+    }
+}
+fn s_null(x: &Cell) -> bool {
+    x == &Cell::ATOM(Token::NIL)
+}
+fn s_list(x: Cell, y: Cell) -> Cell {
+    Cell::cons(x, Cell::cons(y, Cell::ATOM(Token::NIL)))
 }

@@ -1,4 +1,4 @@
-use super::{cons::Cons, tokenize::Token};
+use super::super::{interfaces::cons::Cons, parser::parse::Token};
 
 #[derive(Debug, Clone)]
 pub enum Cell {

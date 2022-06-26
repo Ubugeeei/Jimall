@@ -1,4 +1,23 @@
-use super::cell::{Token, CELL};
+use super::cell::CELL;
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Token {
+    QUOTE,
+    EQ,
+    CAR,
+    CDR,
+    CONS,
+    COND,
+    LAMBDA,
+    NIL,
+    T,
+    PLUS,
+    MINUS,
+    MUL,
+    DIVIDE,
+    NUMBER(f64),
+    SYMBOL(String),
+}
 
 pub fn tokenize_to_strings(s: &str) -> Vec<String> {
     let r: String = s
@@ -63,7 +82,17 @@ fn tokenize_keyword(token: &str) -> Token {
         "nil" => Token::NIL,
         "quote" => Token::QUOTE,
         "t" => Token::T,
-        _ => Token::SYMBOL(String::from(token)),
+        "+" => Token::PLUS,
+        "-" => Token::MINUS,
+        "*" => Token::MUL,
+        "/" => Token::DIVIDE,
+        _ => {
+            let t = token.parse::<f64>();
+            match t {
+                Ok(t) => Token::NUMBER(t),
+                Err(_) => Token::SYMBOL(String::from(token)),
+            }
+        }
     }
 }
 

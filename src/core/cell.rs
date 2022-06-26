@@ -1,23 +1,9 @@
-use super::cons::CONS;
+use super::{cons::CONS, tokenize::Token};
 
 #[derive(Debug, Clone)]
 pub enum CELL {
     ATOM(Token),
     PAIR(CONS),
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum Token {
-    QUOTE,
-    EQ,
-    CAR,
-    CDR,
-    CONS,
-    COND,
-    LAMBDA,
-    NIL,
-    T,
-    SYMBOL(String),
 }
 
 impl CELL {

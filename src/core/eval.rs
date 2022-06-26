@@ -1,6 +1,6 @@
 use super::{
-    cell::{Token, CELL},
-    tokenize::{eqev, s_append, s_pair, s_read},
+    cell::CELL,
+    tokenize::{eqev, s_append, s_pair, s_read, Token},
 };
 
 pub fn eval(s: &str) -> CELL {

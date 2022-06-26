@@ -6,14 +6,12 @@ pub struct Cons {
     pub y: Box<Cell>,
 }
 
-#[allow(dead_code)]
 impl PartialEq for Cons {
     fn eq(&self, _: &Self) -> bool {
         false
     }
 }
 
-#[allow(dead_code)]
 impl PartialEq for Cell {
     fn eq(&self, other: &Self) -> bool {
         match self {

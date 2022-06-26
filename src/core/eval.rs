@@ -45,6 +45,12 @@ fn s_eval(e: CELL, a: CELL) -> CELL {
                     CELL::cons(s_eval(eda, t1), s_eval(edda, t2))
                 }
                 CELL::ATOM(Token::COND) => evcon(ed, a),
+                // TODO: impl four arithmetic operations
+                CELL::ATOM(Token::PLUS) => {
+                    let (eda, edd) = CELL::uncons(ed);
+                    let (edda, _) = CELL::uncons(edd);
+                    evadd(eda, edda)
+                }
                 _ => {
                     let t1 = a.clone();
                     let t2 = a.clone();
@@ -87,6 +93,18 @@ fn evcon(c: CELL, a: CELL) -> CELL {
         s_eval(cada, t2)
     } else {
         evcon(cd, t2)
+    }
+}
+
+fn evadd(c: CELL, a: CELL) -> CELL {
+    match c {
+        CELL::ATOM(Token::NUMBER(i)) => match a {
+            CELL::ATOM(Token::NUMBER(j)) => CELL::ATOM(Token::NUMBER(i + j)),
+            _ => {
+                panic!("add: type error");
+            }
+        },
+        _ => panic!("not a number"),
     }
 }
 
